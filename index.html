@@ -313,7 +313,7 @@
 
 <h4>System Prompt Best Practices</h4>
 <ul>
-  <li><strong>Keep it short:</strong> 80–150 Chinese characters. "DeepSeek的system prompt越短越有效，3行内动词开头的纯指令比长文本更可靠"</li>
+  <li><strong>System prompt: 80–150 characters, verb-first.</strong> DeepSeek has low system-prompt sensitivity; avoid nested conditions, filler words, and content over 80 characters. User instructions have higher priority. Keep system prompts short and verb-first.</li>
   <li><strong>Use verb-first directives.</strong> Avoid nested conditions, filler words, and content exceeding ~80 characters.</li>
   <li><strong>System prompt counts toward total token consumption.</strong> Excessive length squeezes user conversation space and increases cost.</li>
   <li><strong>User instructions have higher priority</strong> than system instructions in DeepSeek's architecture — avoid conflicts.</li>
