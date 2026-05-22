@@ -309,7 +309,7 @@
   <tr><td><code>max_tokens</code></td><td>integer</td><td>null</td><td>Input + output limited by model context</td></tr>
 </table>
 
-<div class="callout critical"><h4>⚠ JSON MODE — CRITICAL REQUIREMENT</h4>To use JSON output: (1) Set <code>response_format</code> to <code>{'type': 'json_object'}</code>. (2) <strong>The system or user prompt MUST contain the word "json" and include an example JSON format.</strong> (3) Set <code>max_tokens</code> appropriately to prevent JSON truncation.<br><br>原文: "用户传入的 system 或 user prompt 中必须含有 json 字样，并给出希望模型输出的 JSON 格式的样例"</div>
+<div class="callout critical"><h4>⚠ JSON MODE — CRITICAL REQUIREMENT</h4>To use JSON output: (1) Set <code>response_format</code> to <code>{'type': 'json_object'}</code>. (2) <strong>The system or user prompt MUST contain the word "json" and include an example JSON format.</strong> (3) Set <code>max_tokens</code> appropriately to prevent JSON truncation.<br><br>From the docs: "The incoming system or user prompt MUST contain the word 'json' and provide a sample of the desired JSON output format so the model can produce legal JSON."</div>
 
 <h4>System Prompt Best Practices</h4>
 <ul>
