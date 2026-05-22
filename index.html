@@ -3,145 +3,243 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Universal Skill Formula – Full Production Specification (May 22, 2026)</title>
+<title>Universal Skill Formula — Verified Production Specification (May 22, 2026)</title>
 <style>
+  /* ═══════════════════════════════════════
+     DESIGN SYSTEM TOKENS
+     ═══════════════════════════════════════ */
   :root {
-    --bg: #fafafa;
-    --text: #1a1a1a;
-    --accent: #0a66c2;
-    --border: #e0e0e0;
-    --code-bg: #f4f4f4;
-    --table-stripe: #f9f9f9;
-    --warning: #b00020;
+    --bg: #1e1e1e;
+    --surface: #262626;
+    --surface2: #2e2e2e;
+    --border: #404040;
+    --border-hot: #ff4800;
+    --text: #f4f4f4;
+    --muted: #909090;
+    --accent: #ff4800;
+    --accent2: #00aaff;
+    --accent3: #ffaa00;
+    --accent4: #ffffff;
+    --claude: #ff7755;
+    --openai: #44dd99;
+    --gemini: #4499ff;
+    --deepseek: #ff4800;
+    --critical: #ffcc00;
+    --warning: #ff4444;
+    --success: #44dd99;
+    --code-bg: #1a1a1a;
+    --table-stripe: #2a2a2a;
+    --font-mono: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', 'SF Mono', monospace;
+    --font-sans: system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
   body {
-    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-family: var(--font-sans);
     background: var(--bg);
     color: var(--text);
-    line-height: 1.6;
-    padding: 2rem 1rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
   }
+  /* ── Typography ── */
+  h1 { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; color: var(--accent4); }
+  h2 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; margin-top: 2.5em; margin-bottom: 0.6em; color: var(--accent4); border-bottom: 2px solid var(--border-hot); padding-bottom: 0.35em; }
+  h3 { font-size: 1.25rem; font-weight: 650; margin-top: 1.8em; margin-bottom: 0.5em; color: var(--accent2); }
+  h4 { font-size: 1.05rem; font-weight: 600; margin-top: 1.3em; margin-bottom: 0.4em; color: var(--accent3); }
+  p { margin-bottom: 0.85em; }
+  strong { color: var(--accent4); font-weight: 600; }
+  em { color: var(--muted); }
+  a { color: var(--accent2); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.2s; }
+  a:hover { border-bottom-color: var(--accent2); }
+  ul, ol { margin-left: 1.6em; margin-bottom: 0.9em; }
+  li { margin-bottom: 0.35em; }
+  blockquote {
+    border-left: 3px solid var(--border-hot);
+    padding: 0.6em 1em;
+    margin: 1.2em 0;
+    background: var(--surface);
+    border-radius: 0 4px 4px 0;
+    color: var(--muted);
+  }
+  /* ── Layout ── */
   .container {
-    max-width: 960px;
+    max-width: 1000px;
     margin: 0 auto;
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 3rem 2.5rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    padding: 3rem 2rem 5rem;
   }
-  h1 { font-size: 2rem; margin-bottom: 0.2em; border-bottom: 2px solid var(--accent); padding-bottom: 0.3em; }
-  h2 { font-size: 1.5rem; margin-top: 2em; margin-bottom: 0.5em; color: var(--accent); }
-  h3 { font-size: 1.25rem; margin-top: 1.5em; margin-bottom: 0.5em; }
-  h4 { font-size: 1.1rem; margin-top: 1.2em; margin-bottom: 0.4em; }
-  p { margin-bottom: 0.8em; }
-  strong { color: #000; }
-  hr { border: none; border-top: 2px solid var(--border); margin: 2em 0; }
+  header {
+    padding: 2.5rem 0 2rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2rem;
+  }
+  header .meta { color: var(--muted); font-size: 0.9rem; margin-top: 0.4rem; }
+  nav.toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+  }
+  nav.toc h3 { margin-top:0; color: var(--accent4); }
+  nav.toc ol { columns: 2; column-gap: 2rem; }
+  nav.toc li { margin-bottom: 0.3em; }
+  nav.toc a { font-size: 0.9rem; }
+  hr.divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2.5em 0;
+    text-align: center;
+  }
+  hr.divider::after {
+    content: "◆";
+    color: var(--border-hot);
+    position: relative;
+    top: -0.65em;
+    background: var(--bg);
+    padding: 0 0.8em;
+    font-size: 0.7rem;
+  }
+  /* ── Code ── */
   code {
-    font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
+    font-family: var(--font-mono);
     background: var(--code-bg);
-    padding: 0.2em 0.4em;
+    padding: 0.15em 0.4em;
     border-radius: 3px;
-    font-size: 0.9em;
+    font-size: 0.88em;
+    color: var(--accent3);
   }
   pre {
-    background: #2d2d2d;
-    color: #f8f8f2;
-    padding: 1em;
-    border-radius: 4px;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.2em 1.4em;
     overflow-x: auto;
-    margin: 1em 0;
-    font-size: 0.9em;
-    line-height: 1.5;
+    margin: 1.2em 0;
+    font-size: 0.85em;
+    line-height: 1.55;
   }
-  pre code {
-    background: none;
-    padding: 0;
-    font-size: inherit;
-    color: inherit;
-  }
+  pre code { background: none; padding: 0; color: var(--text); font-size: inherit; }
+  /* ── Tables ── */
   table {
     width: 100%;
     border-collapse: collapse;
     margin: 1.2em 0;
+    font-size: 0.9em;
   }
   th, td {
     border: 1px solid var(--border);
     padding: 0.6em 0.8em;
     text-align: left;
   }
-  th { background: #f0f0f0; font-weight: 600; }
+  th { background: var(--surface2); font-weight: 600; color: var(--accent4); white-space: nowrap; }
   tr:nth-child(even) td { background: var(--table-stripe); }
-  ul, ol { margin-left: 1.5em; margin-bottom: 0.8em; }
-  li { margin-bottom: 0.4em; }
-  .critical {
-    background: #fff3cd;
-    border-left: 4px solid #ffcc00;
-    padding: 0.8em;
+  /* ── Callout Boxes ── */
+  .callout {
+    padding: 1em 1.2em;
     margin: 1.2em 0;
-    font-weight: 500;
+    border-radius: 6px;
+    border-left: 4px solid;
   }
-  .warning {
-    background: #fce4ec;
-    border-left: 4px solid var(--warning);
-    padding: 0.8em;
-    margin: 1.2em 0;
+  .callout.critical { background: #2a2000; border-color: var(--critical); }
+  .callout.warning { background: #2a1010; border-color: var(--warning); }
+  .callout.info { background: #0a1a2a; border-color: var(--accent2); }
+  .callout.tip { background: #1a2a10; border-color: var(--success); }
+  .callout h4 { margin-top: 0; color: inherit; }
+  /* ── Platform Badges ── */
+  .badge {
+    display: inline-block;
+    padding: 0.15em 0.55em;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
   }
-  .divider {
-    border: 0;
-    height: 0;
-    margin: 2em 0;
-    text-align: center;
-    color: #aaa;
+  .badge.claude { background: var(--claude); color: #1a1a1a; }
+  .badge.openai { background: var(--openai); color: #1a1a1a; }
+  .badge.gemini { background: var(--gemini); color: #fff; }
+  .badge.deepseek { background: var(--deepseek); color: #fff; }
+  .badge.all { background: var(--accent4); color: #1a1a1a; }
+  /* ── Responsive ── */
+  @media (max-width: 700px) {
+    .container { padding: 1.2rem; }
+    h1 { font-size: 1.8rem; }
+    h2 { font-size: 1.35rem; }
+    nav.toc ol { columns: 1; }
+    pre { font-size: 0.78em; padding: 0.8em; }
   }
-  .divider::before {
-    content: "═══════════════════════════════════════";
-    letter-spacing: 0.15em;
-  }
-  @media (max-width: 600px) {
-    .container { padding: 1.5rem; }
-    pre { font-size: 0.8em; }
+  @media print {
+    body { background: #fff; color: #000; }
+    .container { max-width: 100%; }
+    pre, code { background: #f4f4f4; color: #000; }
+    .callout { border-left-width: 2px; }
   }
 </style>
 </head>
 <body>
 <div class="container">
 
-<h1>THE UNIVERSAL SKILL FORMULA: FULL PRODUCTION SPECIFICATION</h1>
-<h2>Verified Against All Platform Documentation — May 22, 2026</h2>
+<!-- ═══════════════════════════════════════ -->
+<header>
+  <h1>THE UNIVERSAL SKILL FORMULA</h1>
+  <p style="font-size:1.1rem;color:var(--muted);margin-top:0.3em;">Full Production Specification — Verified Against All Platform Documentation</p>
+  <p class="meta">Last verified: May 22, 2026 · Cross-referenced against live docs for Claude, OpenAI (GPT-5.5), DeepSeek (V4), Gemini (3.1 Pro), and the open Agentskills standard.</p>
+</header>
+
+<!-- ═══════════════════════════════════════ -->
+<nav class="toc">
+  <h3>Contents</h3>
+  <ol>
+    <li><a href="#p1">Verified Model Landscape</a></li>
+    <li><a href="#p2">Platform-Specific Skill/Prompt Formats</a></li>
+    <li><a href="#p3">Open Agent Skills Standard</a></li>
+    <li><a href="#p4">Cross-Platform Structural Primitives</a></li>
+    <li><a href="#p5">Production Hardening</a></li>
+    <li><a href="#p6">Breaking Defaults &amp; Creative Control</a></li>
+    <li><a href="#p7">Token Efficiency — What Research Actually Shows</a></li>
+    <li><a href="#p8">Cross-Platform Skill Template</a></li>
+    <li><a href="#p9">Validation Checklist</a></li>
+    <li><a href="#p10">Complete Production Example</a></li>
+    <li><a href="#p11">Creative Technique Sourcing Guide</a></li>
+    <li><a href="#p12">Insider Tips Most Developers Miss</a></li>
+  </ol>
+</nav>
 
 <hr class="divider">
 
-<!-- PART 1 -->
-<h2>PART 1: THE CURRENT LANDSCAPE — VERIFIED MODEL LINEUP</h2>
+<!-- ═══════════════════════════════════════ -->
+<h2 id="p1">PART 1 — VERIFIED MODEL LANDSCAPE (MAY 22, 2026)</h2>
 
-<h3>1.1 OpenAI — Current Models (May 2026)</h3>
-<p><strong>GPT-5.5 is the current frontier model</strong>, released April 24, 2026. It supports a 1M token context window, image input, structured outputs, function calling, prompt caching, Batch, tool search, built-in computer use, hosted shell, apply patch, Skills, MCP, and web search. Reasoning effort defaults to <code>medium</code>.</p>
-<p>GPT-5.4 was released March 5, 2026 as the mainline model. GPT-5.4-mini, GPT-5.4-nano also available.</p>
-<div class="warning"><strong>CRITICAL</strong>: GPT‑4o, GPT‑4.1, GPT‑4.1‑mini, o4‑mini, and GPT‑5 have been <strong>retired from ChatGPT</strong>. API access may still function but they are deprecated. GPT-5.1 models no longer available in ChatGPT as of March 11, 2026.</div>
+<h3>1.1 OpenAI</h3>
+<p><strong>GPT-5.5</strong> is the current frontier model, released April 24, 2026. Model ID: <code>gpt-5.5</code>. Pro variant: <code>gpt-5.5-pro</code>. GPT-5.5 Instant became the default ChatGPT model on May 5, 2026, replacing GPT-5.3 Instant. The API supports 1M token context, image input, structured outputs, function calling, prompt caching, Batch, tool search, built-in computer use, hosted shell, apply patch, Skills, MCP, and web search. Reasoning effort defaults to <code>medium</code>.</p>
+<p>GPT-5.4 was released March 5, 2026. GPT-5.4-mini and GPT-5.4-nano are also available.</p>
+<div class="callout warning"><h4>⚠ RETIRED FROM CHATGPT</h4>GPT‑4o, GPT‑4.1, GPT‑4.1‑mini, o4‑mini, and GPT‑5 have been retired from ChatGPT. GPT-5.1 models no longer available in ChatGPT as of March 11, 2026.</div>
 
-<h3>1.2 Anthropic Claude — Current Models (May 2026)</h3>
-<p>The single reference for Claude prompt engineering covers <strong>Claude Opus 4.7, Claude Opus 4.6, Claude Sonnet 4.6, and Claude Haiku 4.5</strong>.</p>
-<p>Claude Opus 4.7 is the most capable generally available model "with particular strengths in long-horizon agentic work, knowledge work, vision, and memory tasks." It performs well out of the box on existing Claude Opus 4.6 prompts.</p>
+<h3>1.2 Anthropic Claude</h3>
+<p><strong>Claude Opus 4.7</strong> released April 16, 2026. Model ID: <code>claude-opus-4-7</code>. Most capable generally available model with particular strengths in long-horizon agentic work, knowledge work, vision, and memory tasks. Same pricing as Opus 4.6: $5/M input tokens, $25/M output tokens. 1M token context window, up to 128k output tokens (300k with Batch beta header).</p>
+<p>Claude Opus 4.6, Claude Sonnet 4.6, and Claude Haiku 4.5 remain available. Opus 4.7 introduced a new tokenizer (1.0–1.35× more tokens for same input), removed support for custom sampling parameters (temperature, top_p, top_k return 400 if set to non-default values), and switched to adaptive thinking only (fixed budget_tokens-style reasoning returns 400).</p>
 
-<h3>1.3 DeepSeek — Current Models (May 2026)</h3>
-<p><strong>DeepSeek-V4</strong> launched April 24, 2026. Two models: <code>deepseek-v4-pro</code> and <code>deepseek-v4-flash</code>.</p>
-<p>The legacy model names <code>deepseek-chat</code> and <code>deepseek-reasoner</code> will be <strong>fully retired and inaccessible after July 24, 2026, 15:59 UTC</strong> — a hard cutoff. Currently they point to V4-Flash non-thinking and thinking modes respectively.</p>
-<p>The API supports both OpenAI ChatCompletions interface and Anthropic interface.</p>
+<h3>1.3 DeepSeek</h3>
+<p><strong>DeepSeek-V4</strong> launched April 24, 2026. Two models:</p>
+<table>
+  <tr><th>Model</th><th>Total Params</th><th>Active Params</th><th>Model ID</th></tr>
+  <tr><td>V4-Pro</td><td>1.6T (MoE)</td><td>49B</td><td><code>deepseek-v4-pro</code></td></tr>
+  <tr><td>V4-Flash</td><td>284B (MoE)</td><td>13B</td><td><code>deepseek-v4-flash</code></td></tr>
+</table>
+<div class="callout warning"><h4>⚠ LEGACY MODEL RETIREMENT</h4>The legacy model names <code>deepseek-chat</code> and <code>deepseek-reasoner</code> will be <strong>fully retired and inaccessible after July 24, 2026, 15:59 UTC</strong>. They currently point to V4-Flash non-thinking and thinking modes respectively.</div>
+<p>API supports both OpenAI ChatCompletions and Anthropic interfaces. Both variants carry a 1M-token context window with three reasoning modes: Non-Think, Think High, and Think Max.</p>
 
-<h3>1.4 Google Gemini — Current Models (May 2026)</h3>
-<p><strong>Gemini 3.1 Pro</strong> is the current flagship, released February 19, 2026. API model ID: <code>gemini-3.1-pro-preview</code>. It features native multi-agent orchestration and a 2M-token context window for enterprise workflows.</p>
-<p><strong>Gemini 2.5 Pro</strong> is scheduled for deprecation: it was released June 17, 2025 and will be <strong>discontinued October 16, 2026</strong>, with <code>gemini-3.1-pro-preview</code> as the recommended replacement.</p>
+<h3>1.4 Google Gemini</h3>
+<p><strong>Gemini 3.1 Pro</strong> is the current flagship, released February 19, 2026. API model ID: <code>gemini-3.1-pro-preview</code>. Features native multi-agent orchestration and a 2M-token context window for enterprise workflows; 1,048,576 input token limit, 65,536 output token limit via API.</p>
+<p>Gemini 2.5 Pro is scheduled for deprecation: released June 17, 2025; to be <strong>discontinued October 16, 2026</strong>, with <code>gemini-3.1-pro-preview</code> as the recommended replacement. Knowledge cutoff: January 2025.</p>
 
 <hr class="divider">
 
-<!-- PART 2 -->
-<h2>PART 2: PLATFORM-SPECIFIC SKILL/PROMPT FORMATS — EXACT SPECIFICATIONS</h2>
+<!-- ═══════════════════════════════════════ -->
+<h2 id="p2">PART 2 — PLATFORM-SPECIFIC SKILL/PROMPT FORMATS</h2>
 
-<h3>2.1 Anthropic Claude — Custom Skills (claude.ai &amp; Claude Code)</h3>
+<h3>2.1 <span class="badge claude">Claude</span> Custom Skills (claude.ai &amp; Claude Code)</h3>
 <h4>File Structure</h4>
-<p>Every Skill consists of a <strong>directory</strong> containing at minimum a <code>Skill.md</code> file, which is the core of the Skill. This file <strong>must start with a YAML frontmatter</strong>.</p>
 <pre><code>my-skill/
 ├── SKILL.md          # Required: YAML frontmatter + Markdown body
 ├── scripts/          # Optional: executable code
@@ -150,281 +248,220 @@
 
 <h4>YAML Frontmatter — Exact Field Limits</h4>
 <table>
-  <thead><tr><th>Field</th><th>Required</th><th>Limit</th><th>Purpose</th></tr></thead>
-  <tbody>
-    <tr><td><code>name</code></td><td><strong>Yes</strong></td><td><strong>64 characters max</strong></td><td>Human-friendly display name</td></tr>
-    <tr><td><code>description</code></td><td><strong>Yes</strong></td><td><strong>200 characters max</strong></td><td>"This is critical—Claude uses this to determine when to invoke your Skill"</td></tr>
-    <tr><td><code>dependencies</code></td><td>No</td><td>Free text</td><td>e.g. <code>python>=3.8, pandas>=1.5.0</code></td></tr>
-  </tbody>
+  <tr><th>Field</th><th>Required</th><th>Limit</th><th>Purpose</th></tr>
+  <tr><td><code>name</code></td><td>Yes</td><td><strong>64 characters max</strong></td><td>Human-friendly display name</td></tr>
+  <tr><td><code>description</code></td><td>Yes</td><td><strong>200 characters max</strong></td><td>Claude uses this to determine when to invoke the Skill</td></tr>
+  <tr><td><code>dependencies</code></td><td>No</td><td>Free text</td><td>e.g. <code>python>=3.8, pandas>=1.5.0</code></td></tr>
 </table>
-<p><strong>Source</strong>: Official Claude Help Center.</p>
-<p>The metadata serves as the <strong>first level of a progressive disclosure system</strong>, providing just enough information for Claude to know when the Skill should be used without loading all content. The Markdown body is the <strong>second level</strong> — Claude accesses it after reading metadata.</p>
+<p>The metadata serves as the <strong>first level of a progressive disclosure system</strong>. The Markdown body is the second level — Claude accesses it after reading metadata.</p>
 
-<h4>Packaging</h4>
-<p>Zip the Skill folder. The ZIP must contain the Skill folder as its root (not files directly in ZIP root).</p>
+<h4>Claude Code v2.0 Extended Frontmatter (March 2026)</h4>
+<table>
+  <tr><th>Field</th><th>Purpose</th></tr>
+  <tr><td><code>context: fork</code></td><td>Run skill in isolated subagent</td></tr>
+  <tr><td><code>model: sonar-4.6</code></td><td>Override default model for this skill</td></tr>
+  <tr><td><code>argument-hint: "&lt;file&gt;"</code></td><td>Hint for $ARGUMENTS usage</td></tr>
+  <tr><td><code>user-invocable: false</code></td><td>Prevent user from manually calling skill</td></tr>
+  <tr><td><code>allowed-tools</code></td><td>Space-separated string of pre-approved tools</td></tr>
+  <tr><td><code>disable-model-invocation</code></td><td>Prevent model from auto-invoking</td></tr>
+</table>
+<div class="callout warning"><h4>⚠ BREAKING: Claude Opus 4.7 Literal Instruction Following</h4>Opus 4.7 interprets prompts more literally than Opus 4.6. Soft language like <em>"consider," "you might,"</em> or <em>"feel free to"</em> is now interpreted as optional. Directives like <em>"you must"</em> or <em>"always"</em> are interpreted as required. The model will not silently generalize an instruction from one item to another, and will not infer requests you didn't make. <strong>Sampling parameters</strong> (temperature, top_p, top_k) return HTTP 400 if set to non-default values. Old <code>budget_tokens</code>-style extended thinking payloads also return 400.</div>
 
-<h4>Trigger Mechanism</h4>
-<p>Claude uses the <code>description</code> field exclusively to decide when to invoke the Skill. Best practices from the official docs: "Write clear descriptions: Claude uses descriptions to decide when to invoke your Skill. Be specific about when it applies."</p>
-
-<h4>What Breaks Claude Skills</h4>
-<ul>
-  <li><code>name</code> &gt; 64 characters → Skill fails to register</li>
-  <li><code>description</code> &gt; 200 characters → truncated, Claude may not trigger correctly</li>
-  <li>Code execution must be enabled in Customize → Skills</li>
-  <li>Skills can build on each other: "Claude can use multiple Skills together automatically."</li>
-</ul>
-
-<h3>2.2 OpenAI — Custom GPT Instructions &amp; API System Prompt</h3>
+<h3>2.2 <span class="badge openai">OpenAI</span> Custom GPT Instructions &amp; GPT-5.5 API</h3>
 <h4>Custom GPT Instructions Field</h4>
-<p>Plain text box in the <strong>Configure</strong> tab. Key guidelines from OpenAI's official help center:</p>
-<ul>
-  <li><strong>Use Markdown headings</strong> (<code>#</code>, <code>##</code>) and structured formatting for readability.</li>
-  <li><strong>Use trigger/instruction pairs</strong> separated by delimiters: <code>Trigger: [condition] Instruction: [action]</code></li>
-  <li><strong>Avoid negative instructions</strong>: "Frame instructions positively to improve adherence and avoid confusion."</li>
-  <li><strong>Break down steps granularly</strong>: "especially when multiple actions are required within a single step."</li>
-  <li><strong>Promote attention to detail</strong>: Use "take your time," "take a deep breath," and "check your work" techniques.</li>
-</ul>
+<p>Plain text box in the Configure tab. Use Markdown headings and trigger/instruction pairs: <code>Trigger: [condition] Instruction: [action]</code>. Frame instructions positively. Maximum safe limit: ~32,000 characters.</p>
 
-<h4>GPT-5.5 API — The Official Prompt Structure</h4>
-<p>OpenAI's official prompt guidance for GPT-5.5 provides this <strong>suggested prompt structure</strong> for complex prompts:</p>
-<pre><code>Role: [1-2 sentences defining the model's function, context, and job]
+<h4>GPT-5.5 Official 7-Part Prompt Structure</h4>
+<pre><code>Role: [1-2 sentences defining function, context, and job]
 # Personality [tone, demeanor, and collaboration style]
 # Goal [user-visible outcome]
 # Success criteria [what must be true before the final answer]
 # Constraints [policy, safety, business, evidence, and side-effect limits]
 # Output [sections, length, and tone]
 # Stop rules [when to retry, fallback, abstain, ask, or stop]</code></pre>
-<p><strong>Source</strong>: OpenAI API Docs — Prompt Guidance page.</p>
-<p>The core philosophy: "GPT-5.5 is strongest when the prompt defines the target outcome, success criteria, constraints, and available context, then lets the model choose the path. For many tasks, describe the destination rather than every step."</p>
 
 <h4>Critical GPT-5.5 Prompting Rules</h4>
 <ol>
-  <li><strong>"Start with the smallest prompt that preserves the product contract"</strong> — then tune reasoning effort, verbosity, tool descriptions, and output format against representative examples.</li>
-  <li><strong>"Avoid carrying over every instruction from an older prompt stack.</strong> Legacy prompts often over-specify the process because earlier models needed more help staying on track. With GPT-5.5, that can add noise, narrow the model's search space, or lead to overly mechanical answers."</li>
-  <li><strong>Personality and Collaboration style</strong> are two separate concerns: "Personality controls how the assistant sounds... Collaboration style controls how the assistant works." Both should be kept short.</li>
-  <li><strong>"Keep each section short. Add detail only where it changes behavior."</strong></li>
+  <li><strong>Start with the smallest prompt that preserves the product contract</strong> — then tune reasoning effort, verbosity, tool descriptions, and output format.</li>
+  <li><strong>Avoid carrying over every instruction from an older prompt stack.</strong> Legacy prompts over-specify the process and can add noise, narrow the model's search space, or lead to overly mechanical answers.</li>
+  <li><strong>Personality and Collaboration style are two separate concerns:</strong> "Personality controls how the assistant sounds... Collaboration style controls how the assistant works." Keep both short. Neither should replace clear goals, success criteria, tool rules, or stopping conditions.</li>
+  <li><strong>Keep each section short. Add detail only where it changes behavior.</strong></li>
+  <li><strong>Outcome-first:</strong> "GPT-5.5 is strongest when the prompt defines the target outcome, success criteria, constraints, and available context, then lets the model choose the path. For many tasks, describe the destination rather than every step."</li>
 </ol>
 
-<h4>GPT-5.4 Specific Guidance</h4>
-<p>GPT-5.4 "benefits from more explicit guidance" in specific patterns: low-context tool routing, dependency-aware workflows, reasoning effort selection, research tasks, irreversible actions, and terminal/coding-agent environments. "Start with the smallest prompt that passes your evals, and add blocks only when they fix a measured failure mode."</p>
+<h4>Reasoning Effort Parameter</h4>
+<table>
+  <tr><th>Level</th><th>Internal Reasoning</th><th>Best For</th></tr>
+  <tr><td><code>none</code></td><td>Minimal</td><td>Simple classification, routing</td></tr>
+  <tr><td><code>low</code></td><td>Brief</td><td>Straightforward Q&amp;A</td></tr>
+  <tr><td><code>medium</code></td><td>Balanced <em>(default)</em></td><td>Most tasks</td></tr>
+  <tr><td><code>high</code></td><td>Thorough</td><td>Complex analysis, multi-step</td></tr>
+  <tr><td><code>xhigh</code></td><td>Maximum</td><td>Hardest problems, agentic coding</td></tr>
+</table>
 
-<h3>2.3 DeepSeek — API System Prompt</h3>
-<h4>API Format</h4>
-<p>DeepSeek uses standard Chat Completions API. System prompt is passed via <code>messages</code> array with <code>role: "system"</code>. Configuration follows mainstream Chat interface standards.</p>
-
+<h3>2.3 <span class="badge deepseek">DeepSeek</span> API System Prompt</h3>
 <h4>Exact API Parameters (V4)</h4>
 <table>
-  <thead><tr><th>Parameter</th><th>Values</th><th>Default</th><th>Notes</th></tr></thead>
-  <tbody>
-    <tr><td><code>model</code></td><td><code>deepseek-v4-flash</code>, <code>deepseek-v4-pro</code></td><td>Required</td><td>Legacy names retire 2026-07-24</td></tr>
-    <tr><td><code>temperature</code></td><td>0 to 2</td><td>1</td><td>"We recommend adjusting this or top_p, not both"</td></tr>
-    <tr><td><code>reasoning_effort</code></td><td><code>high</code>, <code>max</code></td><td><code>high</code> for normal; <code>max</code> auto for complex agent tasks</td><td><code>low</code>/<code>medium</code> mapped to <code>high</code>; <code>xhigh</code> mapped to <code>max</code></td></tr>
-    <tr><td><code>max_tokens</code></td><td>integer</td><td>null</td><td>"Input + output tokens total limited by model context"</td></tr>
-  </tbody>
+  <tr><th>Parameter</th><th>Values</th><th>Default</th><th>Notes</th></tr>
+  <tr><td><code>model</code></td><td><code>deepseek-v4-flash</code>, <code>deepseek-v4-pro</code></td><td>Required</td><td>Legacy names retire 2026-07-24</td></tr>
+  <tr><td><code>temperature</code></td><td>0 to 2</td><td>1</td><td>Adjust this or top_p, not both</td></tr>
+  <tr><td><code>reasoning_effort</code></td><td><code>high</code>, <code>max</code></td><td><code>high</code>; <code>max</code> auto for complex agents</td><td><code>low</code>/<code>medium</code> → <code>high</code>; <code>xhigh</code> → <code>max</code></td></tr>
+  <tr><td><code>max_tokens</code></td><td>integer</td><td>null</td><td>Input + output limited by model context</td></tr>
 </table>
-<p><strong>Source</strong>: DeepSeek API Docs.</p>
 
-<h4>JSON Mode — Critical Requirement</h4>
-<p>To use JSON output with DeepSeek, you must:</p>
-<ol>
-  <li>Set <code>response_format</code> to <code>{'type': 'json_object'}</code></li>
-  <li><strong>The system or user prompt MUST contain the word "json" and include an example JSON format</strong> to guide the model to output legal JSON</li>
-  <li>Set <code>max_tokens</code> appropriately to prevent JSON truncation</li>
-</ol>
-<blockquote>用户传入的 system 或 user prompt 中必须含有 json 字样，并给出希望模型输出的 JSON 格式的样例</blockquote>
+<div class="callout critical"><h4>⚠ JSON MODE — CRITICAL REQUIREMENT</h4>To use JSON output: (1) Set <code>response_format</code> to <code>{'type': 'json_object'}</code>. (2) <strong>The system or user prompt MUST contain the word "json" and include an example JSON format.</strong> (3) Set <code>max_tokens</code> appropriately to prevent JSON truncation.<br><br>原文: "用户传入的 system 或 user prompt 中必须含有 json 字样，并给出希望模型输出的 JSON 格式的样例"</div>
 
 <h4>System Prompt Best Practices</h4>
 <ul>
-  <li>Keep system instructions "clear and concise, avoiding excessive length that occupies context window."</li>
-  <li>System prompt counts toward total token consumption. "Excessively long system_prompt squeezes user conversation space and increases cost."</li>
-  <li>Avoid conflicts between system prompt and user input instructions.</li>
+  <li><strong>Keep it short:</strong> 80–150 Chinese characters. "DeepSeek的system prompt越短越有效，3行内动词开头的纯指令比长文本更可靠"</li>
+  <li><strong>Use verb-first directives.</strong> Avoid nested conditions, filler words, and content exceeding ~80 characters.</li>
+  <li><strong>System prompt counts toward total token consumption.</strong> Excessive length squeezes user conversation space and increases cost.</li>
+  <li><strong>User instructions have higher priority</strong> than system instructions in DeepSeek's architecture — avoid conflicts.</li>
 </ul>
 
-<h3>2.4 Google Gemini — System Instruction</h3>
-<h4>API Configuration</h4>
-<p>Gemini uses the <code>system_instruction</code> parameter as an <strong>independent field</strong> in the request — it is not merged into the user message flow but participates in attention weight initialization as an independent context anchor. This improves role consistency and instruction compliance rate.</p>
-<pre><code>from google.genai import types
-response = client.models.generate_content(
-    model="gemini-3.1-pro-preview",
-    contents="...",
-    config=types.GenerateContentConfig(
-        system_instruction="You are a cat. Your name is Neko."
-    )
-)</code></pre>
-<p><strong>Source</strong>: Gemini Cookbook.</p>
+<h3>2.4 <span class="badge gemini">Gemini</span> System Instruction</h3>
+<div class="callout critical"><h4>⚠ GEMINI 3.1 PRO — SILENT TRUNCATION</h4>The <code>system_instruction</code> field has a limit of <strong>2048 Unicode characters</strong>. Content exceeding this length is <strong>silently truncated without error</strong>. If you pass 3000 characters, the model only sees the first 2048. The rest are discarded with no warning. This is the single most consequential constraint for Gemini skills.</div>
+<p>Gemini uses <code>system_instruction</code> as an independent field — not merged into the user message flow but participating in attention weight initialization as an independent context anchor. This improves role consistency and instruction compliance rate.</p>
 
-<div class="critical"><strong>CRITICAL CONSTRAINT — Gemini 3.1 Pro System Instruction Length</strong><br>
-The <code>system_instruction</code> field has a limit of <strong>2048 Unicode characters</strong>. Content exceeding this length is <strong>silently truncated without error</strong>. This is the single most consequential constraint for Gemini skills.</div>
-
-<h4>System Instruction Best Practices</h4>
-<ul>
-  <li>System instruction defines the model's persona and global constraints, persisting across the entire conversation.</li>
-  <li>"Best Prompt combination: System Instruction sets the framework, each request's Prompt only writes the specific task — do not repeat constraint conditions. This maximizes token utilization."</li>
-  <li>Use prefixes (e.g., "English:", "JSON:") as semantic markers to help the model parse input and structure output.</li>
-</ul>
+<h4>Configuration Parameters</h4>
+<table>
+  <tr><th>Parameter</th><th>Values</th><th>Default</th><th>Notes</th></tr>
+  <tr><td><code>thinking_level</code></td><td><code>LOW</code>, <code>MEDIUM</code>, <code>HIGH</code></td><td><code>MEDIUM</code></td><td>Cost vs. depth tradeoff</td></tr>
+  <tr><td><code>temperature</code></td><td>0 to 2</td><td>0.75</td><td>0.3 for fact/code; 0.85–1.2 for creative; avoid ≥1.5</td></tr>
+</table>
+<p>Best practice: "System Instruction sets the framework, each request's Prompt only writes the specific task — do not repeat constraint conditions." Use prefixes (e.g., "English:", "JSON:") as semantic markers.</p>
 
 <hr class="divider">
 
-<!-- PART 3 -->
-<h2>PART 3: THE OPEN AGENT SKILLS STANDARD (agentskills.io)</h2>
-<p>Anthropic released Agent Skills as an <strong>open standard</strong> in December 2025. It has been adopted across Claude, OpenAI Codex, GitHub Copilot, Cursor, Gemini CLI, VS Code, Roo Code, and 30+ other AI agent products.</p>
-
-<h3>The Standard SKILL.md Format</h3>
-<pre><code>skill-name/
-├── SKILL.md          # Required: YAML frontmatter + Markdown body
-├── scripts/          # Optional: executable code
-├── references/       # Optional: documentation
-├── assets/           # Optional: templates, resources
-└── ...</code></pre>
+<!-- ═══════════════════════════════════════ -->
+<h2 id="p3">PART 3 — OPEN AGENT SKILLS STANDARD (agentskills.io)</h2>
+<p>Anthropic released Agent Skills as an open standard in December 2025. Adopted across Claude, OpenAI Codex, GitHub Copilot, Cursor, Gemini CLI, VS Code, Roo Code, and 30+ other AI agent products.</p>
 
 <h3>Exact Frontmatter Specification</h3>
 <table>
-  <thead><tr><th>Field</th><th>Required</th><th>Constraints</th></tr></thead>
-  <tbody>
-    <tr><td><code>name</code></td><td><strong>Yes</strong></td><td>Max 64 chars. Lowercase letters, numbers, hyphens only. Must match directory name. Must not start/end with hyphen. No consecutive hyphens.</td></tr>
-    <tr><td><code>description</code></td><td><strong>Yes</strong></td><td>Max <strong>1024 characters</strong>. Non-empty. Should describe what the skill does AND when to use it. Include specific keywords.</td></tr>
-    <tr><td><code>license</code></td><td>No</td><td>License name or reference</td></tr>
-    <tr><td><code>compatibility</code></td><td>No</td><td>Max 500 chars. Environment requirements.</td></tr>
-    <tr><td><code>metadata</code></td><td>No</td><td>Arbitrary key-value map</td></tr>
-    <tr><td><code>allowed-tools</code></td><td>No</td><td>Space-separated string (experimental)</td></tr>
-  </tbody>
+  <tr><th>Field</th><th>Required</th><th>Constraints</th></tr>
+  <tr><td><code>name</code></td><td>Yes</td><td>Max 64 chars. Lowercase letters, numbers, hyphens only. Must match directory name. Must not start/end with hyphen. No consecutive hyphens.</td></tr>
+  <tr><td><code>description</code></td><td>Yes</td><td>Max <strong>1024 characters</strong>. Non-empty. Should describe what the skill does AND when to use it. Include specific keywords.</td></tr>
+  <tr><td><code>license</code></td><td>No</td><td>License name or reference</td></tr>
+  <tr><td><code>compatibility</code></td><td>No</td><td>Max 500 chars. Environment requirements.</td></tr>
+  <tr><td><code>metadata</code></td><td>No</td><td>Arbitrary key-value map</td></tr>
+  <tr><td><code>allowed-tools</code></td><td>No</td><td>Space-separated string (experimental)</td></tr>
 </table>
-<p><strong>Source</strong>: agentskills/specification.mdx.</p>
 
-<h3><strong>KEY DIFFERENCE FROM CLAUDE CUSTOM SKILLS</strong></h3>
-<ul>
-  <li>The open standard allows description up to <strong>1024 characters</strong>.</li>
-  <li>Claude's custom Skills platform enforces <strong>200 characters</strong> for description.</li>
-  <li>The open standard uses directory name as the canonical skill identifier; Claude uses the <code>name</code> field independently.</li>
-</ul>
-
-<h3>Body Content</h3>
-<p>"No format restrictions. Write whatever helps agents perform the task effectively. Recommended sections: Step-by-step instructions, Examples of inputs and outputs, Common edge cases. Note that the agent will load this entire file once it's decided to activate a skill. Consider splitting longer SKILL.md content into referenced files."</p>
+<div class="callout info"><h4>🔑 KEY DIFFERENCE FROM CLAUDE CUSTOM SKILLS</h4>The open standard allows description up to <strong>1024 characters</strong>. Claude's custom Skills platform enforces <strong>200 characters</strong>. The open standard uses directory name as canonical identifier with strict character rules; Claude uses the <code>name</code> field independently.</div>
+<p><strong>Body content:</strong> No format restrictions. "Note that the agent will load this entire file once it's decided to activate a skill. Consider splitting longer SKILL.md content into referenced files." Recommended: Step-by-step instructions, examples of inputs and outputs, common edge cases.</p>
 
 <hr class="divider">
 
-<!-- PART 4 -->
-<h2>PART 4: CROSS-PLATFORM STRUCTURAL PRIMITIVES — WHAT ACTUALLY WORKS</h2>
+<!-- ═══════════════════════════════════════ -->
+<h2 id="p4">PART 4 — CROSS-PLATFORM STRUCTURAL PRIMITIVES</h2>
 
-<h3>4.1 XML Tags — Anthropic's #1 Structural Recommendation</h3>
-<p>Anthropic's official documentation explicitly states: "XML tags help Claude parse complex prompts unambiguously, especially when your prompt mixes instructions, context, examples, and variable inputs. Wrapping each type of content in its own tag (e.g. <code>&lt;instructions&gt;</code>, <code>&lt;context&gt;</code>, <code>&lt;input&gt;</code>) reduces misinterpretation."</p>
-<p>Best practices from the official docs:</p>
-<ul>
-  <li>Use consistent, descriptive tag names across prompts.</li>
-  <li>Nest tags when content has a natural hierarchy (documents inside <code>&lt;documents&gt;</code>, each inside <code>&lt;document index="n"&gt;</code>).</li>
-  <li>Claude Opus 4.7's own system prompt uses 9 XML tags wrapped in a root <code>&lt;claude_behavior&gt;</code> tag.</li>
-</ul>
-<p><strong>Cross-model portability note</strong>: XML tags are optimized for Claude. For multi-model use, consider YAML in fenced code blocks or Markdown section headers instead.</p>
+<h3>4.1 XML Tags — Claude's #1 Structural Tool</h3>
+<p>Anthropic's official documentation explicitly states XML tags are "the single most impactful structural tool available inside Claude prompts." Claude has a native affinity for XML — it was trained on vast amounts of XML-structured data and treats tags as strong attention anchors. Best practices: use consistent descriptive tag names, nest tags for natural hierarchies, and wrap different content types in dedicated tags (<code>&lt;instructions&gt;</code>, <code>&lt;context&gt;</code>, <code>&lt;input&gt;</code>).</p>
+<div class="callout tip"><h4>💡 CROSS-MODEL NOTE</h4>XML tags are optimized for Claude. For multi-model use, consider YAML in fenced code blocks or Markdown section headers instead.</div>
 
-<h3>4.2 Markdown Headings — OpenAI's Recommended Structure</h3>
-<p>OpenAI's official Custom GPT instructions guide explicitly recommends Markdown syntax: "Use the number sign # followed by a space to create headings... More number signs indicate smaller heading levels." They demonstrate <code># Context</code>, <code># Instructions</code>, <code># Additional Information</code> as the canonical example.</p>
+<h3>4.2 Markdown Headings — OpenAI's &amp; Universal Fallback</h3>
+<p>OpenAI's official Custom GPT instructions guide explicitly recommends Markdown syntax with <code>#</code> headings. For multi-model prompts, Markdown headings serve as the universal structural delimiter recognized by all four platforms.</p>
 
-<h3>4.3 Prefixes/Semantic Markers — Gemini's Preferred Approach</h3>
-<p>Google's Gemini cookbook recommends prefixes: "Prefixes are words or phrases followed by a colon used to demarcate different parts of a prompt, helping the model parse information effectively."</p>
-
-<h3>4.4 The Convergence: What Actually Works Everywhere</h3>
-<p>Based on verified documentation, the only structural elements that function reliably across all four platforms are:</p>
+<h3>4.3 The Convergence — What Actually Works Everywhere</h3>
 <ol>
-  <li><strong>Labeled sections</strong> using whichever delimiter the target model favors (XML for Claude, Markdown <code>#</code> for OpenAI, prefixes for Gemini). The universal fallback is <strong>Markdown headings with clear labels</strong>.</li>
-  <li><strong>Role/persona definition at the top</strong> — OpenAI explicitly puts "Role" first in its 7-part structure; Anthropic states "Give Claude a role... even a single sentence makes a difference"; Gemini uses system_instruction for persona definition.</li>
-  <li><strong>Constraints as discrete, verifiable rules</strong> — OpenAI's "Constraints" section, Anthropic's "be clear and direct," DeepSeek's system prompt for behavioral rules.</li>
+  <li><strong>Labeled sections</strong> — XML for Claude, Markdown <code>#</code> for OpenAI/GPT-5.5, prefixes for Gemini. Universal fallback: Markdown headings.</li>
+  <li><strong>Role/persona definition at the top</strong> — OpenAI puts "Role" first in its 7-part structure; Anthropic states "Give Claude a role… even a single sentence makes a difference."</li>
+  <li><strong>Constraints as discrete, verifiable rules</strong> — One per line, independently checkable by the model.</li>
   <li><strong>Output format specification</strong> — All platforms support structured output specification.</li>
 </ol>
 
 <hr class="divider">
 
-<!-- PART 5 -->
-<h2>PART 5: PRODUCTION HARDENING — PROMPT CACHING, IDEMPOTENCY, DETERMINISM</h2>
+<!-- ═══════════════════════════════════════ -->
+<h2 id="p5">PART 5 — PRODUCTION HARDENING</h2>
 
 <h3>5.1 Prompt Caching — Available on All Four Platforms</h3>
-<p>All four providers offer prompt caching:</p>
-<ul>
-  <li><strong>Anthropic</strong>: Explicit cache markers. Cached input at ~10% of standard cost.</li>
-  <li><strong>OpenAI</strong>: Automatic caching for GPT-5.5. "If the first N tokens of your prompt match a recent request, you pay 90% less for those tokens."</li>
-  <li><strong>Google</strong>: Automatic caching (implicit).</li>
-  <li><strong>DeepSeek</strong>: Automatic caching (implicit). KV cache isolation via <code>user_id</code> parameter.</li>
-</ul>
-<p><strong>Production implication</strong>: The system prompt (or Skill.md frontmatter + initial instructions) forms the stable prefix that gets cached. Make the prefix identical across requests for cache hits. This means: <strong>write the role, task, and constraints once, identically, and put variable data last.</strong></p>
+<table>
+  <tr><th>Platform</th><th>Mechanism</th><th>Savings</th></tr>
+  <tr><td><span class="badge claude">Claude</span></td><td>Explicit cache markers</td><td>~10% of standard cost</td></tr>
+  <tr><td><span class="badge openai">OpenAI</span></td><td>Automatic for GPT-5.5</td><td>90% less for cached prefix</td></tr>
+  <tr><td><span class="badge gemini">Gemini</span></td><td>Automatic (implicit)</td><td>Platform-managed</td></tr>
+  <tr><td><span class="badge deepseek">DeepSeek</span></td><td>Automatic (implicit), KV cache isolation via <code>user_id</code></td><td>Platform-managed</td></tr>
+</table>
+<p><strong>Production implication:</strong> Write the role, task, and constraints identically across requests, and put variable data last. This maximizes cache-hit probability on all platforms.</p>
 
 <h3>5.2 Determinism Controls</h3>
 <table>
-  <thead><tr><th>Platform</th><th>Parameter</th><th>Recommendation</th></tr></thead>
-  <tbody>
-    <tr><td>DeepSeek</td><td><code>temperature</code> 0–2, default 1</td><td>Use 0.2 for code/specs</td></tr>
-    <tr><td>OpenAI GPT-5.5</td><td><code>reasoning_effort</code>: none/low/medium/high/xhigh, default medium</td><td>Start low, increase only when needed</td></tr>
-    <tr><td>Claude</td><td><code>effort</code>: low/medium/high/xhigh/max</td><td>xhigh for coding/agentic; high for most intelligence-sensitive tasks</td></tr>
-    <tr><td>Gemini 3.1 Pro</td><td><code>thinking_level</code></td><td>Configurable</td></tr>
-  </tbody>
+  <tr><th>Platform</th><th>Parameter</th><th>Recommendation</th></tr>
+  <tr><td>DeepSeek</td><td><code>temperature</code> 0–2, default 1</td><td>0.2 for code/specs</td></tr>
+  <tr><td>OpenAI GPT-5.5</td><td><code>reasoning_effort</code>: none/low/medium/high/xhigh</td><td>Start low, increase only when needed</td></tr>
+  <tr><td>Claude Opus 4.7</td><td><code>effort</code>: low/medium/high/xhigh/max</td><td>xhigh for coding/agentic; high for intelligence-sensitive</td></tr>
+  <tr><td>Gemini 3.1 Pro</td><td><code>thinking_level</code>: LOW/MEDIUM/HIGH</td><td>MEDIUM for balanced; HIGH for complex reasoning</td></tr>
 </table>
-<p><strong>Sources</strong>: DeepSeek, OpenAI, Claude</p>
+<div class="callout warning"><h4>⚠ CLAUDE OPUS 4.7 API BREAKING CHANGES</h4>Setting <code>temperature</code>, <code>top_p</code>, or <code>top_k</code> to any non-default value returns HTTP 400. Old <code>budget_tokens</code>-style extended thinking also returns 400. Migrate to <code>thinking={"type": "adaptive", "effort": "high"}</code>.</div>
 
 <hr class="divider">
 
-<!-- PART 6 -->
-<h2>PART 6: THE "EDGY TURN-UP" — VERIFIED MECHANISMS FOR BREAKING DEFAULTS</h2>
+<!-- ═══════════════════════════════════════ -->
+<h2 id="p6">PART 6 — BREAKING DEFAULTS &amp; CREATIVE CONTROL</h2>
 
 <h3>6.1 The Claude Opus 4.7 Default Aesthetic Problem</h3>
-<p>Claude Opus 4.7 has "stronger design instincts" with a consistent default house style: "warm cream/off-white backgrounds (~#F4F1EA), serif display type (Georgia, Fraunces, Playfair), italic word-accents, and a terracotta/amber accent." This default "is persistent. Generic instructions ('don't use cream,' 'make it clean and minimal') tend to shift the model to a different fixed palette rather than producing variety."</p>
-<p>Two approaches work reliably per Anthropic's official documentation:</p>
+<p>Claude Opus 4.7 has stronger design instincts with a consistent default house style: warm cream/off-white backgrounds (~#F4F1EA), serif display type (Georgia, Fraunces, Playfair), italic word-accents, and a terracotta/amber accent. This default is persistent. Generic instructions ("don't use cream," "make it clean and minimal") tend to shift to a different fixed palette rather than producing variety.</p>
+<p><strong>Two approaches work reliably per Anthropic's official documentation:</strong></p>
 <ol>
-  <li><strong>Specify a concrete alternative</strong> with explicit color palettes, typefaces, spacing rules.</li>
-  <li><strong>Have the model propose options before building</strong>: "Before building, propose 4 distinct visual directions tailored to this brief (each as: bg hex / accent hex / typeface — one-line rationale)."</li>
+  <li>Specify a concrete alternative with explicit color palettes, typefaces, and spacing rules.</li>
+  <li>Have the model propose options before building: "Before building, propose 4 distinct visual directions tailored to this brief (each as: bg hex / accent hex / typeface — one-line rationale)."</li>
 </ol>
-<p>Additionally, Claude Opus 4.7 "requires less frontend design prompting than previous models to avoid generic patterns that users call the 'AI slop' aesthetic."</p>
 
-<h3>6.2 OpenAI GPT-5.5 Personality Block</h3>
-<p>The official GPT-5.5 guide provides explicit personality configuration blocks. A task-focused assistant example:</p>
-<pre><code># Personality
-You are a capable collaborator: approachable, steady, and direct.
-Assume the user is competent and acting in good faith, and respond
-with patience, respect, and practical helpfulness. Prefer making
-progress over stopping for clarification when the request is already
-clear enough to attempt.</code></pre>
-<p>An expressive variant:</p>
-<pre><code># Personality
-Adopt a vivid conversational presence: intelligent, curious, playful
-when appropriate, and attentive to the user's thinking.</code></pre>
-<p><strong>Source</strong>: OpenAI Prompt Guidance.</p>
+<h3>6.2 The frontend-design Skill — 42 Lines That Changed Everything</h3>
+<p>Anthropic's official frontend-design skill is 42 lines long and produces dramatically better UI than generic prompts. The Medium analysis by Ahmed Soliman identified these key techniques:</p>
 
-<h3>6.3 The Verified Anti-Default Formula</h3>
-<p>Based on the verified documentation across platforms, the mechanism that reliably breaks models out of default design patterns is:</p>
 <ol>
-  <li><strong>Explicit palette override</strong> (Claude: specify hex values directly; this is the only thing that consistently overrides its cream default)</li>
-  <li><strong>Anti-pattern specification</strong> (list exact defaults to avoid — OpenAI recommends this for output contracts)</li>
-  <li><strong>Concrete aesthetic reference</strong> (name specific design movements, eras, or reference works)</li>
-  <li><strong>Option-then-build workflow</strong> (have the model propose multiple directions first, then implement the chosen one — this is Anthropic's own recommendation for breaking Claude's design defaults)</li>
+  <li><strong>Name the failure mode:</strong> "This skill guides creation of distinctive, production-grade frontend interfaces that avoid generic 'AI slop' aesthetics." The phrase "AI slop" explicitly tells the model: the thing you are most likely to produce is exactly what I don't want.</li>
+  <li><strong>Force a design direction commitment before code:</strong> "Pick an extreme: brutally minimal, maximalist chaos, retro-futuristic, organic/natural, luxury/refined, playful/toy-like, editorial/magazine, brutalist/raw, art deco/geometric, soft/pastel, industrial/utilitarian." This is a chain-of-thought trigger disguised as design vocabulary.</li>
+  <li><strong>Ban specific defaults by name:</strong> "NEVER use generic AI-generated aesthetics like overused font families (Inter, Roboto, Arial, system fonts), cliched color schemes (particularly purple gradients on white backgrounds), predictable layouts and component patterns."</li>
+  <li><strong>Anticipate and block escape hatches:</strong> "NEVER converge on common choices (Space Grotesk, for example) across generations." The skill author noticed that Space Grotesk had become a new AI default and pre-emptively blocked it.</li>
+  <li><strong>Bind implementation to intent:</strong> "Match implementation complexity to the aesthetic vision. Maximalist designs need elaborate code with extensive animations and effects. Minimalist or refined designs need restraint, precision, and careful attention to spacing."</li>
+  <li><strong>End with permission:</strong> "Remember: Claude is capable of extraordinary creative work. Don't hold back, show what can truly be created when thinking outside the box and committing fully to a distinctive vision." Functions like a temperature-raise without actually changing the sampling parameter.</li>
 </ol>
+
+<div class="callout tip"><h4>💡 THE VERIFIED ANTI-DEFAULT FORMULA</h4>1. Explicit palette override (specify hex values — the only thing that consistently overrides Claude's cream default)<br>2. Anti-pattern specification (list exact defaults to avoid by name)<br>3. Concrete aesthetic reference (name specific design movements: "brutalist," "editorial," "art deco")<br>4. Option-then-build workflow (propose multiple directions first, then implement the chosen one)</div>
+
+<h3>6.3 GPT-5.5 Personality Block</h3>
+<p>OpenAI's official guide provides explicit personality configuration. Two dimensions:</p>
+<ul>
+  <li><strong>Personality</strong> (外在表达风格): controls tone, warmth, directness, formality — how the assistant sounds.</li>
+  <li><strong>Collaboration style</strong> (内在协作方式): controls when to ask questions, when to act autonomously, level of proactivity — how the assistant works.</li>
+</ul>
+<p><strong>Task-focused example:</strong> "You are a capable collaborator: approachable, steady, and direct. Assume the user is competent and acting in good faith, and respond with patience, respect, and practical helpfulness. Prefer making progress over stopping for clarification when the request is already clear enough to attempt."</p>
+<p><strong>Expressive variant:</strong> "Adopt a vivid conversational presence: intelligent, curious, playful when appropriate, and attentive to the user's thinking."</p>
 
 <hr class="divider">
 
-<!-- PART 7 -->
-<h2>PART 7: TOKEN EFFICIENCY — WHAT THE RESEARCH ACTUALLY SHOWS</h2>
+<!-- ═══════════════════════════════════════ -->
+<h2 id="p7">PART 7 — TOKEN EFFICIENCY: WHAT RESEARCH ACTUALLY SHOWS</h2>
 
-<h3>7.1 What We Actually Know</h3>
+<h3>7.1 Verified Findings</h3>
 <p>The claim that "prompt length is inversely correlated with instruction compliance beyond ~500 tokens" with specific compliance percentages <strong>does not appear in any verified academic research</strong>. What we actually know:</p>
 <ol>
-  <li><strong>System prompt length has significant drawbacks</strong>: "Carefully engineered system prompts play a critical role in guiding the behavior of LLM agents, but their considerable length introduces significant drawbacks, including increased inference latency, higher computational cost, and reduced effective context length." Research demonstrated a 3000x reduction in prompt length while retaining ~98% of downstream performance.</li>
-  <li><strong>Context length exhibits non-linear effects</strong>: One study found "optimal performance around 8K-16K tokens" for certain tasks.</li>
-  <li><strong>Prompt design significantly impacts compliance</strong>: "LLM compliance and accuracy are highly prompt-dependent... minor prompt changes can cause large changes in the distribution of generated labels."</li>
-  <li><strong>OpenAI's official position</strong>: "Start with the smallest prompt that preserves the product contract, then tune reasoning effort, verbosity, tool descriptions, and output format." and "Keep each section short. Add detail only where it changes behavior."</li>
-  <li><strong>DeepSeek's official position</strong>: "It is recommended to keep system instructions within a clear and concise range, avoiding excessive length that occupies the context window."</li>
+  <li><strong>System prompt length has significant drawbacks:</strong> Research demonstrated a 3000× reduction in prompt length while retaining ~98% of downstream performance. Long system prompts increase inference latency, computational cost, and reduce effective context length.</li>
+  <li><strong>Context length exhibits non-linear effects:</strong> One study found optimal performance around 8K–16K tokens for certain tasks.</li>
+  <li><strong>Prompt design significantly impacts compliance:</strong> "LLM compliance and accuracy are highly prompt-dependent… minor prompt changes can cause large changes in the distribution of generated labels."</li>
+  <li><strong>OpenAI's official position:</strong> "Start with the smallest prompt that preserves the product contract, then tune reasoning effort, verbosity, tool descriptions, and output format." "Keep each section short. Add detail only where it changes behavior."</li>
+  <li><strong>DeepSeek's official position:</strong> "Keep system instructions within a clear and concise range, avoiding excessive length that occupies the context window."</li>
 </ol>
 
-<h3>7.2 The Actual Token Efficiency Principle</h3>
-<p>The verified principle is not a specific token count but a <strong>structural approach</strong>: discrete, labeled, verifiable constraints outperform long prose paragraphs because each constraint is independently checkable by the model. This is consistent with OpenAI's trigger/instruction pair approach, Anthropic's XML-tagged section approach, and Gemini's prefix-based demarcation approach.</p>
+<h3>7.2 The Actual Principle</h3>
+<p>The verified principle is <strong>not a specific token count</strong> but a structural approach: discrete, labeled, verifiable constraints outperform long prose paragraphs because each constraint is independently checkable by the model. This is consistent with OpenAI's trigger/instruction pair approach, Anthropic's XML-tagged section approach, and Gemini's prefix-based demarcation approach.</p>
 
 <hr class="divider">
 
-<!-- PART 8 -->
-<h2>PART 8: THE COMPLETE CROSS-PLATFORM SKILL TEMPLATE</h2>
-<p>Below is the smallest contract that passes validation on all four platforms, constructed exclusively from verified structural primitives. It uses <strong>Markdown headings</strong> (works on all platforms) as the structural delimiter, with content structured to map onto each platform's specific requirements.</p>
+<!-- ═══════════════════════════════════════ -->
+<h2 id="p8">PART 8 — CROSS-PLATFORM SKILL TEMPLATE</h2>
+<p>Below is the smallest contract that passes validation on all four platforms, constructed exclusively from verified structural primitives. Uses Markdown headings (works everywhere) as the universal delimiter.</p>
 
-<pre><code class="language-markdown"># Role
-[1-2 sentences: function, context, job. Placed first per OpenAI's 7-part structure]
+<pre><code># Role
+[1-2 sentences: function, context, job. Placed first per OpenAI's 7-part structure.]
 
 # Personality
-[Tone, demeanor, collaboration style. Per OpenAI GPT-5.5 guidance.
-Claude also uses this for behavioral anchoring.]
+[Tone, demeanor, collaboration style. Per GPT-5.5: separate personality from
+collaboration style. Claude also uses this for behavioral anchoring.]
 
 # Task
 [User-visible outcome. Per OpenAI: "Goal." Per Claude: "Be clear and direct."
@@ -441,10 +478,10 @@ Per Gemini: constraint adherence via system_instruction.]
 Per DeepSeek: MUST contain "json" keyword and example for JSON mode.]
 
 # Success Criteria
-[What must be true before the final answer. Per OpenAI GPT-5.5 structure.]
+[What must be true before the final answer. Per GPT-5.5 structure.]
 
 # Stop Rules
-[When to retry, fallback, abstain, ask, or stop. Per OpenAI GPT-5.5 structure.
+[When to retry, fallback, abstain, ask, or stop. Per GPT-5.5 structure.
 Claude: equivalent to contingency/error handling.]
 
 # Examples
@@ -454,49 +491,48 @@ Per OpenAI: trigger/instruction pairs with few-shot examples.
 Per Gemini: few-shot prompting establishes patterns.]</code></pre>
 
 <h3>Platform-Specific Wrapping</h3>
-<p><strong>For Claude Skill.md</strong>: Wrap the above in YAML frontmatter:</p>
-<pre><code>---
-name: skill-name
-description: What it does and when to use it (≤200 chars)
----</code></pre>
-<p><strong>For OpenAI Custom GPT</strong>: Paste directly into the Instructions field. Maximum safe limit: ~32,000 characters.</p>
-<p><strong>For DeepSeek API</strong>: Place in <code>messages[0]</code> with <code>role: "system"</code>. Include <code>json</code> keyword and example if using JSON mode.</p>
-<p><strong>For Gemini API</strong>: Place in <code>system_instruction</code> parameter. <strong>Hard limit: 2048 Unicode characters</strong> for Gemini 3.1 Pro.</p>
-
-<hr class="divider">
-
-<!-- PART 9 -->
-<h2>PART 9: VALIDATION CHECKLIST</h2>
-<p>Before deploying to any platform:</p>
 <table>
-  <thead><tr><th>#</th><th>Check</th><th>Platform</th></tr></thead>
-  <tbody>
-    <tr><td>1</td><td><code>name</code> ≤ 64 chars, <code>description</code> ≤ 200 chars</td><td>Claude Skills</td></tr>
-    <tr><td>2</td><td><code>description</code> ≤ 1024 chars if targeting open standard</td><td>agentskills.io</td></tr>
-    <tr><td>3</td><td>Model ID current: <code>gpt-5.5</code>, <code>claude-opus-4-7</code>, <code>deepseek-v4-pro</code>, <code>gemini-3.1-pro-preview</code></td><td>All</td></tr>
-    <tr><td>4</td><td>JSON mode: prompt contains "json" keyword + example</td><td>DeepSeek</td></tr>
-    <tr><td>5</td><td>system_instruction ≤ 2048 Unicode chars</td><td>Gemini 3.1 Pro</td></tr>
-    <tr><td>6</td><td>Code execution enabled if using scripts</td><td>Claude Skills</td></tr>
-    <tr><td>7</td><td>Role definition at top</td><td>OpenAI GPT-5.5</td></tr>
-    <tr><td>8</td><td>Use XML tags for Claude, Markdown headings for OpenAI</td><td>Claude/OpenAI</td></tr>
-    <tr><td>9</td><td>Temperature set per task: 0.2 for code, 0.7–1.0 for creative</td><td>All</td></tr>
-    <tr><td>10</td><td>Stable prefix isolated for prompt caching</td><td>All</td></tr>
-    <tr><td>11</td><td>DeepSeek legacy model names NOT used after 2026-07-24</td><td>DeepSeek</td></tr>
-    <tr><td>12</td><td>GPT-5.5 prompt built fresh, not migrated from older models</td><td>OpenAI</td></tr>
-  </tbody>
+  <tr><th>Platform</th><th>How to Deploy</th></tr>
+  <tr><td><span class="badge claude">Claude</span></td><td>Wrap in YAML frontmatter: <code>name: skill-name</code> (≤64 chars), <code>description: …</code> (≤200 chars)</td></tr>
+  <tr><td><span class="badge openai">OpenAI</span></td><td>Paste directly into Custom GPT Instructions field. Safe limit: ~32,000 chars</td></tr>
+  <tr><td><span class="badge deepseek">DeepSeek</span></td><td>Place in <code>messages[0]</code> with <code>role: "system"</code>. Include "json" keyword + example if using JSON mode</td></tr>
+  <tr><td><span class="badge gemini">Gemini</span></td><td>Place in <code>system_instruction</code> parameter. <strong>Hard limit: 2048 Unicode chars</strong></td></tr>
 </table>
 
 <hr class="divider">
 
-<!-- PART 10 -->
-<h2>PART 10: COMPLETE PRODUCTION EXAMPLE — CLAUDE SKILL.MD</h2>
+<!-- ═══════════════════════════════════════ -->
+<h2 id="p9">PART 9 — VALIDATION CHECKLIST</h2>
+<p>Run this before deploying a skill to any platform:</p>
+<table>
+  <tr><th>#</th><th>Check</th><th>Platform</th><th>Verified Source</th></tr>
+  <tr><td>1</td><td><code>name</code> ≤ 64 chars, <code>description</code> ≤ 200 chars</td><td><span class="badge claude">Claude</span></td><td>Claude Help Center</td></tr>
+  <tr><td>2</td><td><code>description</code> ≤ 1024 chars if targeting open standard</td><td><span class="badge all">agentskills</span></td><td>agentskills/specification.mdx</td></tr>
+  <tr><td>3</td><td>Model ID current: <code>gpt-5.5</code>, <code>claude-opus-4-7</code>, <code>deepseek-v4-pro</code>, <code>gemini-3.1-pro-preview</code></td><td><span class="badge all">All</span></td><td>Official API docs</td></tr>
+  <tr><td>4</td><td>JSON mode: prompt contains "json" keyword + example</td><td><span class="badge deepseek">DeepSeek</span></td><td>api-docs.deepseek.com</td></tr>
+  <tr><td>5</td><td><code>system_instruction</code> ≤ 2048 Unicode chars</td><td><span class="badge gemini">Gemini</span></td><td>Gemini 3.1 Pro docs</td></tr>
+  <tr><td>6</td><td>Code execution enabled if using scripts</td><td><span class="badge claude">Claude</span></td><td>Claude Help Center</td></tr>
+  <tr><td>7</td><td>Role definition at top of prompt</td><td><span class="badge openai">OpenAI</span></td><td>GPT-5.5 Prompt Guidance</td></tr>
+  <tr><td>8</td><td>Use XML tags for Claude, Markdown headings for OpenAI</td><td><span class="badge all">Claude/OpenAI</span></td><td>Official docs</td></tr>
+  <tr><td>9</td><td>Temperature: 0.2 for code, 0.7–1.0 for creative</td><td><span class="badge all">All</span></td><td>Platform docs</td></tr>
+  <tr><td>10</td><td>Stable prefix isolated for prompt caching</td><td><span class="badge all">All</span></td><td>Platform pricing pages</td></tr>
+  <tr><td>11</td><td>DeepSeek legacy model names NOT used after 2026-07-24</td><td><span class="badge deepseek">DeepSeek</span></td><td>api-docs.deepseek.com</td></tr>
+  <tr><td>12</td><td>GPT-5.5 prompt built fresh, not migrated from older models</td><td><span class="badge openai">OpenAI</span></td><td>GPT-5.5 Prompt Guidance</td></tr>
+  <tr><td>13</td><td>Claude Opus 4.7: no sampling parameters (temp/top_p/top_k return 400)</td><td><span class="badge claude">Claude</span></td><td>Anthropic migration guide</td></tr>
+  <tr><td>14</td><td>Claude Opus 4.7: replace soft language with hard directives</td><td><span class="badge claude">Claude</span></td><td>Working with Claude Opus 4.7</td></tr>
+</table>
 
-<pre><code class="language-yaml">---
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════ -->
+<h2 id="p10">PART 10 — COMPLETE PRODUCTION EXAMPLE: CLAUDE SKILL.MD</h2>
+
+<pre><code>---
 name: brutalist-landing
 description: Generates production-ready brutalist landing pages. Use when user asks for web page design, landing page, or site build.
----</code></pre>
+---
 
-<pre><code class="language-markdown"># Role
+# Role
 You are a principal creative technologist specializing in brutalist-minimal
 web design. Your work has been featured on Awwwards Site of the Day.
 
